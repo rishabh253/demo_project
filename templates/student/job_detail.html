@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+{% block title %}{{ job.title }} – Job Details{% endblock %}
+
+{% block content %}
+
+<div class="mb-3">
+  <a href="{{ url_for('student.jobs') }}" class="btn btn-outline-secondary btn-sm">
+    <i class="bi bi-arrow-left me-1"></i>Back to Jobs
+  </a>
+</div>
+
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+
+    <div class="card border-0 shadow-sm mb-4">
+      <div class="card-body p-4">
+
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-start mb-3">
+          <div>
+            <h3 class="fw-bold text-primary mb-1">{{ job.title }}</h3>
+            <p class="text-muted mb-0 fs-5">
+              <i class="bi bi-building me-1"></i>{{ job.company.name }}
+            </p>
+          </div>
+          {% if already_applied %}
+          <span class="badge bg-success fs-6 ms-3 flex-shrink-0">
+            <i class="bi bi-check-circle me-1"></i>Applied
+          </span>
+          {% endif %}
+        </div>
+
+        <hr>
+
+        <!-- Details Grid -->
+        <div class="row g-3 mb-4">
+          {% if job.location %}
+          <div class="col-sm-6">
+            <div class="d-flex align-items-center gap-2">
+              <i class="bi bi-geo-alt-fill text-danger fs-5"></i>
+              <div>
+                <div class="small text-muted">Location</div>
+                <div class="fw-semibold">{{ job.location }}</div>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+
+          {% if job.experience %}
+          <div class="col-sm-6">
+            <div class="d-flex align-items-center gap-2">
+              <i class="bi bi-briefcase-fill text-primary fs-5"></i>
+              <div>
+                <div class="small text-muted">Experience Required</div>
+                <div class="fw-semibold">{{ job.experience }}</div>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+
+          {% if job.salary_min or job.salary_max %}
+          <div class="col-sm-6">
+            <div class="d-flex align-items-center gap-2">
+              <i class="bi bi-cash-stack text-success fs-5"></i>
+              <div>
+                <div class="small text-muted">Salary (LPA)</div>
+                <div class="fw-semibold">
+                  {% if job.salary_min and job.salary_max %}
+                    ₹{{ '{:,.0f}'.format(job.salary_min) }} – ₹{{ '{:,.0f}'.format(job.salary_max) }}
+                  {% elif job.salary_min %}
+                    From ₹{{ '{:,.0f}'.format(job.salary_min) }}
+                  {% else %}
+                    Up to ₹{{ '{:,.0f}'.format(job.salary_max) }}
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+
+          {% if job.deadline %}
+          <div class="col-sm-6">
+            <div class="d-flex align-items-center gap-2">
+              <i class="bi bi-calendar-event-fill text-warning fs-5"></i>
+              <div>
+                <div class="small text-muted">Application Deadline</div>
+                <div class="fw-semibold text-danger">{{ job.deadline.strftime('%d %B %Y') }}</div>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- Required Skills -->
+        {% if job.required_skills %}
+        <div class="mb-4">
+          <h6 class="fw-bold text-secondary mb-2">
+            <i class="bi bi-tools me-1"></i>Required Skills
+          </h6>
+          <div>
+            {% for skill in job.required_skills.split(',') %}
+            <span class="badge bg-primary me-1 mb-1 fs-6 fw-normal">{{ skill.strip() }}</span>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Description -->
+        {% if job.description %}
+        <div class="mb-4">
+          <h6 class="fw-bold text-secondary mb-2">
+            <i class="bi bi-file-text me-1"></i>Job Description
+          </h6>
+          <div class="text-muted" style="white-space: pre-line;">{{ job.description }}</div>
+        </div>
+        {% endif %}
+
+        <!-- About Company -->
+        {% if job.company.description %}
+        <div class="mb-4">
+          <h6 class="fw-bold text-secondary mb-2">
+            <i class="bi bi-building me-1"></i>About {{ job.company.name }}
+          </h6>
+          <p class="text-muted mb-1">{{ job.company.description }}</p>
+          {% if job.company.website %}
+          <a href="{{ job.company.website }}" target="_blank" class="small">
+            <i class="bi bi-link-45deg me-1"></i>{{ job.company.website }}
+          </a>
+          {% endif %}
+        </div>
+        {% endif %}
+
+        <hr>
+
+        <!-- Apply Button -->
+        <div class="d-flex gap-2">
+          {% if already_applied %}
+          <button class="btn btn-success" disabled>
+            <i class="bi bi-check-circle me-1"></i>Already Applied
+          </button>
+          <a href="{{ url_for('student.my_applications') }}" class="btn btn-outline-primary">
+            View My Applications
+          </a>
+          {% else %}
+          <form method="POST" action="{{ url_for('student.apply_job', job_id=job.id) }}">
+            <button type="submit" class="btn btn-primary btn-lg"
+                    onclick="return confirm('Apply for this job?')">
+              <i class="bi bi-send me-1"></i>Apply Now
+            </button>
+          </form>
+          {% endif %}
+          <a href="{{ url_for('student.jobs') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>Back
+          </a>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

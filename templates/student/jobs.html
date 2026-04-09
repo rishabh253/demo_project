@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% block title %}Browse Jobs{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h3 class="fw-bold text-primary">
+    <i class="bi bi-briefcase me-2"></i>Browse Jobs
+  </h3>
+  <span class="badge bg-primary fs-6">{{ jobs|length }} Jobs Found</span>
+</div>
+
+<!-- Search & Filter Form -->
+<div class="card border-0 shadow-sm mb-4">
+  <div class="card-body">
+    <form method="GET" class="row g-2 align-items-end">
+      <div class="col-md-4">
+        <label class="form-label small fw-semibold">Search</label>
+        <input type="text" name="search" class="form-control"
+               placeholder="Job title or keyword..." value="{{ search }}">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label small fw-semibold">Skill</label>
+        <input type="text" name="skill" class="form-control"
+               placeholder="e.g. Python" value="{{ skill_f }}">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label small fw-semibold">Company</label>
+        <input type="text" name="company" class="form-control"
+               placeholder="Company name" value="{{ company_f }}">
+      </div>
+      <div class="col-md-2 d-flex gap-2">
+        <button type="submit" class="btn btn-primary flex-fill">
+          <i class="bi bi-search"></i>
+        </button>
+        {% if search or skill_f or company_f %}
+        <a href="{{ url_for('student.jobs') }}" class="btn btn-outline-secondary flex-fill">
+          <i class="bi bi-x-lg"></i>
+        </a>
+        {% endif %}
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Job Listings -->
+{% if jobs %}
+<div class="row g-3">
+  {% for job in jobs %}
+  <div class="col-md-6 col-xl-4">
+    <div class="card border-0 shadow-sm h-100">
+      <div class="card-body d-flex flex-column">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+          <h5 class="card-title fw-bold mb-0">{{ job.title }}</h5>
+          {% if job.id in applied_ids %}
+          <span class="badge bg-success ms-2 flex-shrink-0">Applied</span>
+          {% endif %}
+        </div>
+        <p class="text-muted small mb-1">
+          <i class="bi bi-building me-1"></i>{{ job.company.name }}
+        </p>
+        {% if job.location %}
+        <p class="text-muted small mb-1">
+          <i class="bi bi-geo-alt me-1"></i>{{ job.location }}
+        </p>
+        {% endif %}
+        {% if job.salary_min or job.salary_max %}
+        <p class="text-muted small mb-1">
+          <i class="bi bi-cash-stack me-1"></i>
+          {% if job.salary_min and job.salary_max %}
+            ₹{{ '{:,.0f}'.format(job.salary_min) }} – ₹{{ '{:,.0f}'.format(job.salary_max) }} LPA
+          {% elif job.salary_min %}
+            From ₹{{ '{:,.0f}'.format(job.salary_min) }} LPA
+          {% else %}
+            Up to ₹{{ '{:,.0f}'.format(job.salary_max) }} LPA
+          {% endif %}
+        </p>
+        {% endif %}
+        {% if job.required_skills %}
+        <div class="mb-2 mt-1">
+          {% for skill in job.required_skills.split(',') %}
+          <span class="badge bg-light text-dark border me-1 mb-1">{{ skill.strip() }}</span>
+          {% endfor %}
+        </div>
+        {% endif %}
+        {% if job.deadline %}
+        <p class="small text-danger mb-2">
+          <i class="bi bi-calendar-x me-1"></i>Deadline: {{ job.deadline.strftime('%d %b %Y') }}
+        </p>
+        {% endif %}
+        <div class="mt-auto pt-2">
+          <a href="{{ url_for('student.job_detail', job_id=job.id) }}"
+             class="btn btn-outline-primary btn-sm w-100">
+            <i class="bi bi-eye me-1"></i>View Details
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+{% else %}
+<div class="text-center py-5 text-muted">
+  <i class="bi bi-briefcase display-4"></i>
+  <p class="mt-2 fs-5">No jobs found{% if search or skill_f or company_f %} matching your filters{% endif %}.</p>
+  {% if search or skill_f or company_f %}
+  <a href="{{ url_for('student.jobs') }}" class="btn btn-outline-primary mt-2">Clear Filters</a>
+  {% endif %}
+</div>
+{% endif %}
+
+{% endblock %}

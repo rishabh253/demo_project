@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% block title %}My Applications{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h3 class="fw-bold text-primary">
+    <i class="bi bi-file-earmark-check me-2"></i>My Applications
+  </h3>
+  <div class="d-flex align-items-center gap-2">
+    <span class="badge bg-primary fs-6">{{ applications|length }} Total</span>
+    <a href="{{ url_for('student.jobs') }}" class="btn btn-outline-primary btn-sm">
+      <i class="bi bi-briefcase me-1"></i>Browse More Jobs
+    </a>
+  </div>
+</div>
+
+{% if applications %}
+<div class="row g-3">
+  {% for app in applications %}
+  <div class="col-12">
+    <div class="card border-0 shadow-sm">
+      <div class="card-body">
+        <div class="row align-items-center">
+
+          <div class="col-md-5">
+            <h5 class="fw-bold mb-1">{{ app.job.title }}</h5>
+            <p class="text-muted mb-0">
+              <i class="bi bi-building me-1"></i>{{ app.job.company.name }}
+              {% if app.job.location %}
+              &nbsp;·&nbsp;<i class="bi bi-geo-alt me-1"></i>{{ app.job.location }}
+              {% endif %}
+            </p>
+          </div>
+
+          <div class="col-md-3 mt-2 mt-md-0">
+            <div class="small text-muted">Applied on</div>
+            <div class="fw-semibold">{{ app.applied_at.strftime('%d %b %Y') }}</div>
+            {% if app.updated_at and app.updated_at != app.applied_at %}
+            <div class="small text-muted">Updated: {{ app.updated_at.strftime('%d %b %Y') }}</div>
+            {% endif %}
+          </div>
+
+          <div class="col-md-2 mt-2 mt-md-0 text-md-center">
+            <span class="badge fs-6
+              {% if app.status == 'placed' %}bg-success
+              {% elif app.status == 'shortlisted' %}bg-warning text-dark
+              {% elif app.status == 'interview' %}bg-info text-dark
+              {% elif app.status == 'rejected' %}bg-danger
+              {% else %}bg-secondary{% endif %}">
+              {{ app.status | capitalize }}
+            </span>
+          </div>
+
+          <div class="col-md-2 mt-2 mt-md-0 text-md-end">
+            <a href="{{ url_for('student.job_detail', job_id=app.job_id) }}"
+               class="btn btn-outline-primary btn-sm">
+              <i class="bi bi-eye me-1"></i>View Job
+            </a>
+          </div>
+
+        </div>
+
+        {% if app.notes %}
+        <div class="mt-2 p-2 bg-light rounded small text-muted">
+          <i class="bi bi-chat-square-text me-1"></i>
+          <strong>Recruiter Note:</strong> {{ app.notes }}
+        </div>
+        {% endif %}
+
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+{% else %}
+<div class="text-center py-5 text-muted">
+  <i class="bi bi-file-earmark-x display-4"></i>
+  <p class="mt-2 fs-5">You haven't applied to any jobs yet.</p>
+  <a href="{{ url_for('student.jobs') }}" class="btn btn-primary mt-2">
+    <i class="bi bi-briefcase me-1"></i>Browse Jobs
+  </a>
+</div>
+{% endif %}
+
+{% endblock %}

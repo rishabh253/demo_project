@@ -1,0 +1,188 @@
+{% extends 'base.html' %}
+{% block title %}Company Dashboard{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h3 class="fw-bold text-success">
+    <i class="bi bi-building me-2"></i>{{ company.name }}
+  </h3>
+  <a href="{{ url_for('company.post_job') }}" class="btn btn-success">
+    <i class="bi bi-plus-circle me-1"></i>Post New Job
+  </a>
+</div>
+
+<!-- Stats Cards -->
+<div class="row g-3 mb-4">
+  <div class="col-sm-6 col-xl-3">
+    <div class="card border-0 shadow-sm bg-primary text-white">
+      <div class="card-body d-flex align-items-center gap-3">
+        <i class="bi bi-briefcase fs-1 opacity-75"></i>
+        <div>
+          <div class="fs-3 fw-bold">{{ jobs|length }}</div>
+          <div class="small opacity-75">Total Job Postings</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="card border-0 shadow-sm bg-success text-white">
+      <div class="card-body d-flex align-items-center gap-3">
+        <i class="bi bi-check-circle fs-1 opacity-75"></i>
+        <div>
+          <div class="fs-3 fw-bold">{{ active_jobs }}</div>
+          <div class="small opacity-75">Active Jobs</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="card border-0 shadow-sm bg-info text-white">
+      <div class="card-body d-flex align-items-center gap-3">
+        <i class="bi bi-file-earmark-text fs-1 opacity-75"></i>
+        <div>
+          <div class="fs-3 fw-bold">{{ total_apps }}</div>
+          <div class="small opacity-75">Total Applications</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="card border-0 shadow-sm bg-warning text-dark">
+      <div class="card-body d-flex align-items-center gap-3">
+        <i class="bi bi-trophy fs-1 opacity-75"></i>
+        <div>
+          <div class="fs-3 fw-bold">{{ placed }}</div>
+          <div class="small opacity-75">Students Placed</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Job Postings -->
+<div class="card border-0 shadow-sm mb-4">
+  <div class="card-header bg-white fw-semibold border-bottom d-flex justify-content-between align-items-center">
+    <span><i class="bi bi-briefcase me-1 text-primary"></i>Your Job Postings</span>
+    <a href="{{ url_for('company.post_job') }}" class="btn btn-sm btn-success">
+      <i class="bi bi-plus me-1"></i>Add Job
+    </a>
+  </div>
+  {% if jobs %}
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>Title</th>
+          <th>Location</th>
+          <th>Status</th>
+          <th>Approval</th>
+          <th>Applications</th>
+          <th>Posted</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for job in jobs %}
+        <tr>
+          <td class="fw-semibold">{{ job.title }}</td>
+          <td class="text-muted small">{{ job.location or '—' }}</td>
+          <td>
+            <span class="badge {% if job.status == 'active' %}bg-success{% else %}bg-secondary{% endif %}">
+              {{ job.status | capitalize }}
+            </span>
+          </td>
+          <td>
+            <span class="badge {% if job.is_approved %}bg-success{% else %}bg-warning text-dark{% endif %}">
+              {% if job.is_approved %}Approved{% else %}Pending{% endif %}
+            </span>
+          </td>
+          <td>
+            <a href="{{ url_for('company.job_applications', job_id=job.id) }}"
+               class="text-decoration-none">
+              {{ job.applications.count() }} <i class="bi bi-arrow-right-short"></i>
+            </a>
+          </td>
+          <td class="small text-muted">{{ job.created_at.strftime('%d %b %Y') }}</td>
+          <td>
+            <div class="d-flex gap-1">
+              <a href="{{ url_for('company.edit_job', job_id=job.id) }}"
+                 class="btn btn-outline-primary btn-sm">
+                <i class="bi bi-pencil"></i>
+              </a>
+              <a href="{{ url_for('company.job_applications', job_id=job.id) }}"
+                 class="btn btn-outline-info btn-sm">
+                <i class="bi bi-people"></i>
+              </a>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="card-body text-center text-muted py-4">
+    <i class="bi bi-briefcase display-5"></i>
+    <p class="mt-2">No job postings yet. <a href="{{ url_for('company.post_job') }}">Post your first job</a>.</p>
+  </div>
+  {% endif %}
+</div>
+
+<!-- Recent Applications -->
+<div class="card border-0 shadow-sm">
+  <div class="card-header bg-white fw-semibold border-bottom">
+    <i class="bi bi-clock-history me-1 text-info"></i>Recent Applications
+  </div>
+  {% if recent_apps %}
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>Student</th>
+          <th>Job</th>
+          <th>Status</th>
+          <th>Applied</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for app in recent_apps %}
+        <tr>
+          <td>
+            <a href="{{ url_for('company.student_profile', student_id=app.student_id) }}"
+               class="text-decoration-none fw-semibold">
+              {{ app.student.name or app.student.user.username }}
+            </a>
+          </td>
+          <td>{{ app.job.title }}</td>
+          <td>
+            <span class="badge
+              {% if app.status == 'placed' %}bg-success
+              {% elif app.status == 'shortlisted' %}bg-warning text-dark
+              {% elif app.status == 'interview' %}bg-info text-dark
+              {% elif app.status == 'rejected' %}bg-danger
+              {% else %}bg-secondary{% endif %}">
+              {{ app.status | capitalize }}
+            </span>
+          </td>
+          <td class="small text-muted">{{ app.applied_at.strftime('%d %b %Y') }}</td>
+          <td>
+            <a href="{{ url_for('company.job_applications', job_id=app.job_id) }}"
+               class="btn btn-outline-secondary btn-sm">
+              <i class="bi bi-arrow-right"></i>
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="card-body text-center text-muted py-4">
+    <p class="mb-0">No applications received yet.</p>
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}
