@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% block title %}Company Registration{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <div class="card shadow-sm border-0 mt-3">
+      <div class="card-body p-4">
+
+        <h3 class="text-success fw-bold mb-1">
+          <i class="bi bi-building me-2"></i>Company Registration
+        </h3>
+        <p class="text-muted small mb-4">
+          After registering, your account will be reviewed by admin before you can login.
+        </p>
+
+        <form method="POST">
+          <div class="row g-3">
+
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Username *</label>
+              <input type="text" name="username" class="form-control" required/>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Email *</label>
+              <input type="email" name="email" class="form-control" required/>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Password *</label>
+              <input type="password" name="password" id="pwd" class="form-control" required/>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Confirm Password *</label>
+              <input type="password" name="confirm_password" id="cpwd" class="form-control" required/>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Company Name *</label>
+              <input type="text" name="name" class="form-control" required/>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Industry</label>
+              <select name="industry" class="form-select">
+                <option value="">Select Industry</option>
+                <option>Information Technology</option>
+                <option>Software Development</option>
+                <option>Finance & Banking</option>
+                <option>E-Commerce</option>
+                <option>Healthcare</option>
+                <option>Other</option>
+              </select>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Website</label>
+              <input type="url" name="website" class="form-control"
+                     placeholder="https://company.com"/>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Location</label>
+              <input type="text" name="location" class="form-control"
+                     placeholder="Bangalore, India"/>
+            </div>
+
+            <div class="col-12">
+              <label class="form-label fw-semibold">Company Description</label>
+              <textarea name="description" class="form-control" rows="3"
+                        placeholder="What does your company do?"></textarea>
+            </div>
+
+          </div>
+
+  
+          <div class="alert alert-info small mt-3">
+            <i class="bi bi-info-circle me-1"></i>
+            After submitting, your account will be <strong>pending admin approval</strong>.
+            You will only be able to login after admin approves your registration.
+          </div>
+
+          <button type="submit" class="btn btn-success px-4 py-2"
+                  onclick="return checkPasswords()">
+            <i class="bi bi-building-add me-1"></i>Submit Registration
+          </button>
+          <a href="{{ url_for('auth.login') }}" class="btn btn-link ms-2">
+            Back to Login
+          </a>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  function checkPasswords() {
+    const pwd  = document.getElementById('pwd').value;
+    const cpwd = document.getElementById('cpwd').value;
+    if (pwd !== cpwd) {
+      alert('Passwords do not match!');
+      return false;
+    }
+    return true;
+  }
+</script>
+{% endblock %}

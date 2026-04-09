@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block title %}Login – Placement Portal{% endblock %}
+
+{% block content %}
+
+
+<div class="row justify-content-center">
+
+
+  <div class="col-md-5">
+
+    <div class="card shadow-sm border-0 mt-3">
+      <div class="card-body p-4">
+
+        <h3 class="text-center text-primary fw-bold mb-4">
+          <i class="bi bi-box-arrow-in-right me-2"></i>Login
+        </h3>
+
+ 
+        <form method="POST">
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Email Address</label>
+          
+            <input type="email" name="email" class="form-control"
+                   required placeholder="you@example.com"/>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Password</label>
+            <input type="password" name="password" class="form-control"
+                   required placeholder="••••••••"/>
+            
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100 py-2">
+        
+            Login
+          </button>
+
+        </form>
+
+        <hr class="my-3"/>
+
+
+        <div class="d-grid gap-2">
+          <a href="{{ url_for('auth.register_student') }}"
+             class="btn btn-outline-primary btn-sm">
+            New Student? Register here
+          </a>
+          <a href="{{ url_for('auth.register_company') }}"
+             class="btn btn-outline-success btn-sm">
+            Register your Company
+          </a>
+        </div>
+
+  
+        <div class="text-center mt-3">
+          <small class="text-muted">
+            Admin login: <code>admin@placement.com</code> / <code>admin123</code>
+          </small>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% block title %}Manage Companies{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h3 class="fw-bold text-primary">
+    <i class="bi bi-building me-2"></i>Manage Companies
+  </h3>
+</div>
+
+<form method="GET" class="mb-4">
+  <div class="input-group">
+    <input type="text" name="search" class="form-control"
+           placeholder="Search by company name or industry..."
+           value="{{ search }}"/>
+    <button class="btn btn-primary" type="submit">
+      <i class="bi bi-search"></i> Search
+    </button>
+    {% if search %}
+    <a href="{{ url_for('admin.companies') }}" class="btn btn-outline-secondary">Clear</a>
+    {% endif %}
+  </div>
+</form>
+
+{% if companies %}
+<div class="table-responsive">
+  <table class="table table-hover align-middle border shadow-sm">
+    <thead class="table-primary">
+      <tr>
+        <th>#</th>
+        <th>Company</th>
+        <th>Industry</th>
+        <th>Location</th>
+        <th>Registered</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for c in companies %}
+      <tr>
+        <td class="text-muted">{{ loop.index }}</td>
+        <td>
+          <a href="{{ url_for('admin.company_detail', company_id=c.id) }}"
+             class="fw-semibold text-decoration-none">{{ c.name }}</a>
+          {% if c.is_blacklisted %}
+          <span class="badge bg-dark ms-1">Blacklisted</span>
+          {% endif %}
+          <div class="small text-muted">{{ c.user.email }}</div>
+        </td>
+        <td>{{ c.industry or '—' }}</td>
+        <td>{{ c.location or '—' }}</td>
+        <td class="small text-muted">{{ c.created_at.strftime('%d %b %Y') }}</td>
+        <td>
+          <span class="badge fs-6
+            {% if c.approval_status == 'approved' %}bg-success
+            {% elif c.approval_status == 'pending' %}bg-warning text-dark
+            {% else %}bg-danger{% endif %}">
+            {{ c.approval_status | capitalize }}
+          </span>
+        </td>
+        <td>
+          <div class="d-flex gap-1 flex-wrap">
+            {% if c.approval_status == 'pending' %}
+            <form method="POST" action="{{ url_for('admin.approve_company', company_id=c.id) }}">
+              <button class="btn btn-success btn-sm">
+                <i class="bi bi-check-lg"></i> Approve
+              </button>
+            </form>
+            <form method="POST" action="{{ url_for('admin.reject_company', company_id=c.id) }}">
+              <button class="btn btn-danger btn-sm">
+                <i class="bi bi-x-lg"></i> Reject
+              </button>
+            </form>
+            {% endif %}
+            {% if c.approval_status == 'approved' %}
+            <form method="POST" action="{{ url_for('admin.blacklist_company', company_id=c.id) }}"
+                  onsubmit="return confirm('Are you sure?')">
+              <button class="btn btn-sm {% if c.is_blacklisted %}btn-outline-dark{% else %}btn-dark{% endif %}">
+                <i class="bi bi-ban me-1"></i>{{ 'Un-Blacklist' if c.is_blacklisted else 'Blacklist' }}
+              </button>
+            </form>
+            {% endif %}
+            <a href="{{ url_for('admin.company_detail', company_id=c.id) }}"
+               class="btn btn-outline-primary btn-sm">
+              <i class="bi bi-eye"></i>
+            </a>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="text-center py-5 text-muted">
+  <i class="bi bi-building display-4"></i>
+  <p class="mt-2">No companies found{% if search %} for "{{ search }}"{% endif %}.</p>
+</div>
+{% endif %}
+
+{% endblock %}

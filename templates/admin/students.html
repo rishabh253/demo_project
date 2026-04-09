@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% block title %}Manage Students{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h3 class="fw-bold text-success">
+    <i class="bi bi-people me-2"></i>Manage Students
+  </h3>
+  <span class="badge bg-success fs-6">{{ students|length }} Students</span>
+</div>
+
+<form method="GET" class="mb-4">
+  <div class="input-group">
+    <input type="text" name="search" class="form-control"
+           placeholder="Search by name, roll number or phone..."
+           value="{{ search }}"/>
+    <button class="btn btn-success" type="submit">
+      <i class="bi bi-search"></i> Search
+    </button>
+    {% if search %}
+    <a href="{{ url_for('admin.students') }}" class="btn btn-outline-secondary">Clear</a>
+    {% endif %}
+  </div>
+</form>
+
+{% if students %}
+<div class="table-responsive">
+  <table class="table table-hover align-middle border shadow-sm">
+    <thead class="table-success">
+      <tr>
+        <th>#</th>
+        <th>Student</th>
+        <th>Roll No</th>
+        <th>Branch</th>
+        <th>CGPA</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for s in students %}
+      <tr>
+        <td class="text-muted">{{ loop.index }}</td>
+        <td>
+          <a href="{{ url_for('admin.student_detail', student_id=s.id) }}"
+             class="fw-semibold text-decoration-none">{{ s.name }}</a>
+          <div class="small text-muted">{{ s.user.email }}</div>
+        </td>
+        <td>{{ s.roll_no or '—' }}</td>
+        <td>{{ s.branch or '—' }}</td>
+        <td>{{ s.cgpa or '—' }}</td>
+        <td>
+          {% if s.user.active %}
+          <span class="badge bg-success">Active</span>
+          {% else %}
+          <span class="badge bg-danger">Deactivated</span>
+          {% endif %}
+        </td>
+        <td>
+          <div class="d-flex gap-1">
+            <form method="POST"
+                  action="{{ url_for('admin.blacklist_student', student_id=s.id) }}"
+                  onsubmit="return confirm('Are you sure?')">
+              <button class="btn btn-sm {% if s.user.active %}btn-outline-danger{% else %}btn-outline-success{% endif %}">
+                {% if s.user.active %}Deactivate{% else %}Activate{% endif %}
+              </button>
+            </form>
+            <a href="{{ url_for('admin.student_detail', student_id=s.id) }}"
+               class="btn btn-outline-primary btn-sm">
+              <i class="bi bi-eye"></i>
+            </a>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="text-center py-5 text-muted">
+  <i class="bi bi-people display-4"></i>
+  <p class="mt-2">No students found{% if search %} for "{{ search }}"{% endif %}.</p>
+</div>
+{% endif %}
+
+{% endblock %}

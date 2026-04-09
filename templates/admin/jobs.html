@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block title %}Manage Jobs{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h3 class="fw-bold text-info">
+    <i class="bi bi-briefcase me-2"></i>Manage Job Postings
+  </h3>
+  <span class="badge bg-info fs-6">{{ jobs|length }} Jobs</span>
+</div>
+
+{% if jobs %}
+<div class="table-responsive">
+  <table class="table table-hover align-middle border shadow-sm">
+    <thead class="table-info">
+      <tr>
+        <th>#</th>
+        <th>Job Title</th>
+        <th>Company</th>
+        <th>Posted</th>
+        <th>Applications</th>
+        <th>Status</th>
+        <th>Approved</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for j in jobs %}
+      <tr>
+        <td class="text-muted">{{ loop.index }}</td>
+        <td class="fw-semibold">{{ j.title }}</td>
+        <td>
+          <a href="{{ url_for('admin.company_detail', company_id=j.company.id) }}"
+             class="text-decoration-none">{{ j.company.name }}</a>
+        </td>
+        <td class="small text-muted">{{ j.created_at.strftime('%d %b %Y') }}</td>
+        <td><span class="badge bg-secondary">{{ j.applications.count() }}</span></td>
+        <td>
+          <span class="badge {% if j.status == 'active' %}bg-success{% else %}bg-secondary{% endif %}">
+            {{ j.status | capitalize }}
+          </span>
+        </td>
+        <td>
+          <span class="badge {% if j.is_approved %}bg-success{% else %}bg-warning text-dark{% endif %}">
+            {% if j.is_approved %}Approved{% else %}Pending{% endif %}
+          </span>
+        </td>
+        <td>
+          {% if not j.is_approved %}
+          <form method="POST" action="{{ url_for('admin.approve_job', job_id=j.id) }}" class="d-inline">
+            <button class="btn btn-success btn-sm"><i class="bi bi-check-lg"></i></button>
+          </form>
+          <form method="POST" action="{{ url_for('admin.reject_job', job_id=j.id) }}" class="d-inline">
+            <button class="btn btn-danger btn-sm"><i class="bi bi-x-lg"></i></button>
+          </form>
+          {% else %}
+          <span class="text-muted small">—</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="text-center py-5 text-muted">
+  <i class="bi bi-briefcase display-4"></i>
+  <p class="mt-2">No job postings yet.</p>
+</div>
+{% endif %}
+
+{% endblock %}

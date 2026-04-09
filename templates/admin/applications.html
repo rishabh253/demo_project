@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block title %}All Applications{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h3 class="fw-bold text-secondary">
+    <i class="bi bi-file-earmark-text me-2"></i>All Applications
+  </h3>
+  <span class="badge bg-secondary fs-6">{{ applications|length }} Applications</span>
+</div>
+
+{% if applications %}
+<div class="table-responsive">
+  <table class="table table-hover align-middle border shadow-sm">
+    <thead class="table-secondary">
+      <tr>
+        <th>#</th>
+        <th>Student</th>
+        <th>Job Title</th>
+        <th>Company</th>
+        <th>Applied On</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for app in applications %}
+      <tr>
+        <td class="text-muted">{{ loop.index }}</td>
+        <td>
+          <a href="{{ url_for('admin.student_detail', student_id=app.student.id) }}"
+             class="fw-semibold text-decoration-none">{{ app.student.name }}</a>
+          <div class="small text-muted">{{ app.student.roll_no or '—' }}</div>
+        </td>
+        <td>{{ app.job.title }}</td>
+        <td>{{ app.job.company.name }}</td>
+        <td class="small text-muted">{{ app.applied_at.strftime('%d %b %Y') }}</td>
+        <td>
+          <span class="badge
+            {% if app.status == 'placed' %}bg-success
+            {% elif app.status == 'rejected' %}bg-danger
+            {% elif app.status == 'shortlisted' %}bg-info
+            {% elif app.status == 'interview' %}bg-warning text-dark
+            {% else %}bg-secondary{% endif %}">
+            {{ app.status | capitalize }}
+          </span>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="text-center py-5 text-muted">
+  <i class="bi bi-file-earmark-text display-4"></i>
+  <p class="mt-2">No applications yet.</p>
+</div>
+{% endif %}
+
+{% endblock %}
