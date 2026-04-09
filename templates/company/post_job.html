@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% block title %}Post a Job{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h3 class="fw-bold text-success">
+    <i class="bi bi-plus-circle me-2"></i>Post a New Job
+  </h3>
+  <a href="{{ url_for('company.dashboard') }}" class="btn btn-outline-secondary btn-sm">
+    <i class="bi bi-arrow-left me-1"></i>Back to Dashboard
+  </a>
+</div>
+
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-success text-white fw-semibold">
+        <i class="bi bi-briefcase-fill me-2"></i>Job Details
+      </div>
+      <div class="card-body p-4">
+        <form method="POST">
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Job Title <span class="text-danger">*</span></label>
+            <input type="text" name="title" class="form-control"
+                   placeholder="e.g. Software Engineer" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Job Description</label>
+            <textarea name="description" class="form-control" rows="5"
+                      placeholder="Describe the role, responsibilities, and requirements..."></textarea>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Required Skills <small class="text-muted">(comma-separated)</small></label>
+            <input type="text" name="required_skills" class="form-control"
+                   placeholder="e.g. Python, Django, SQL">
+          </div>
+
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Experience Required</label>
+              <input type="text" name="experience" class="form-control"
+                     placeholder="e.g. 0-2 years / Fresher">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Location</label>
+              <input type="text" name="location" class="form-control"
+                     placeholder="e.g. Bangalore / Remote">
+            </div>
+          </div>
+
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Minimum Salary (LPA)</label>
+              <input type="number" name="salary_min" class="form-control"
+                     step="0.1" min="0" placeholder="e.g. 5">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Maximum Salary (LPA)</label>
+              <input type="number" name="salary_max" class="form-control"
+                     step="0.1" min="0" placeholder="e.g. 10">
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label fw-semibold">Application Deadline</label>
+            <input type="date" name="deadline" class="form-control">
+          </div>
+
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-success">
+              <i class="bi bi-send me-1"></i>Post Job
+            </button>
+            <a href="{{ url_for('company.dashboard') }}" class="btn btn-outline-secondary">Cancel</a>
+          </div>
+
+        </form>
+      </div>
+    </div>
+
+    <div class="alert alert-info mt-3 small">
+      <i class="bi bi-info-circle me-1"></i>
+      Your job posting will be reviewed by an admin before it becomes visible to students.
+    </div>
+  </div>
+</div>
+
+{% endblock %}

@@ -40,6 +40,8 @@ class Student(db.Model):
     cgpa = db.Column(db.Float)
     skills = db.Column(db.Text)
     phone = db.Column(db.String(20))
+    linkedin = db.Column(db.String(250))
+    about = db.Column(db.Text)
     resume_path = db.Column(db.String(250))
 
     applications  = db.relationship('Application', backref='student', lazy='dynamic')

@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+{% block title %}Applications – {{ job.title }}{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h3 class="fw-bold text-primary mb-0">
+      <i class="bi bi-people me-2"></i>Applications
+    </h3>
+    <p class="text-muted mb-0">{{ job.title }}</p>
+  </div>
+  <a href="{{ url_for('company.dashboard') }}" class="btn btn-outline-secondary btn-sm">
+    <i class="bi bi-arrow-left me-1"></i>Back to Dashboard
+  </a>
+</div>
+
+<!-- Job summary -->
+<div class="card border-0 shadow-sm mb-4">
+  <div class="card-body">
+    <div class="row g-2">
+      <div class="col-sm-6 col-md-3">
+        <small class="text-muted d-block">Job Title</small>
+        <span class="fw-semibold">{{ job.title }}</span>
+      </div>
+      {% if job.location %}
+      <div class="col-sm-6 col-md-3">
+        <small class="text-muted d-block">Location</small>
+        <span class="fw-semibold">{{ job.location }}</span>
+      </div>
+      {% endif %}
+      <div class="col-sm-6 col-md-3">
+        <small class="text-muted d-block">Status</small>
+        <span class="badge {% if job.status == 'active' %}bg-success{% else %}bg-secondary{% endif %}">
+          {{ job.status | capitalize }}
+        </span>
+      </div>
+      <div class="col-sm-6 col-md-3">
+        <small class="text-muted d-block">Total Applicants</small>
+        <span class="fw-semibold">{{ applications|length }}</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% if applications %}
+<div class="row g-3">
+  {% for app in applications %}
+  <div class="col-12">
+    <div class="card border-0 shadow-sm">
+      <div class="card-body">
+        <div class="row align-items-start g-3">
+
+          <!-- Student Info -->
+          <div class="col-md-4">
+            <h5 class="fw-bold mb-1">
+              <a href="{{ url_for('company.student_profile', student_id=app.student_id) }}"
+                 class="text-decoration-none text-dark">
+                <i class="bi bi-person-circle me-1 text-primary"></i>
+                {{ app.student.name or app.student.user.username }}
+              </a>
+            </h5>
+            {% if app.student.branch %}
+            <p class="text-muted small mb-1">
+              <i class="bi bi-mortarboard me-1"></i>{{ app.student.branch }}
+            </p>
+            {% endif %}
+            {% if app.student.cgpa %}
+            <p class="text-muted small mb-1">
+              <i class="bi bi-star-fill text-warning me-1"></i>CGPA: {{ app.student.cgpa }}
+            </p>
+            {% endif %}
+            {% if app.student.skills %}
+            <div>
+              {% for skill in app.student.skills.split(',') %}
+              <span class="badge bg-light text-dark border me-1 mb-1" style="font-size:0.7rem;">{{ skill.strip() }}</span>
+              {% endfor %}
+            </div>
+            {% endif %}
+            {% if app.student.resume_path %}
+            <a href="{{ url_for('static', filename='uploads/resumes/' + app.student.resume_path) }}"
+               target="_blank" class="btn btn-outline-secondary btn-sm mt-2">
+              <i class="bi bi-file-earmark-pdf me-1"></i>Resume
+            </a>
+            {% endif %}
+          </div>
+
+          <!-- Status & Notes Form -->
+          <div class="col-md-5">
+            <form method="POST"
+                  action="{{ url_for('company.update_application', app_id=app.id) }}">
+              <div class="mb-2">
+                <label class="form-label small fw-semibold mb-1">Update Status</label>
+                <select name="status" class="form-select form-select-sm">
+                  {% for s in ['applied', 'shortlisted', 'interview', 'rejected', 'placed'] %}
+                  <option value="{{ s }}" {% if app.status == s %}selected{% endif %}>
+                    {{ s | capitalize }}
+                  </option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="mb-2">
+                <label class="form-label small fw-semibold mb-1">Notes / Feedback</label>
+                <textarea name="notes" class="form-control form-control-sm" rows="2"
+                          placeholder="Optional notes to the student...">{{ app.notes or '' }}</textarea>
+              </div>
+              <button type="submit" class="btn btn-primary btn-sm">
+                <i class="bi bi-save me-1"></i>Update
+              </button>
+            </form>
+          </div>
+
+          <!-- Current Status -->
+          <div class="col-md-3 text-md-end">
+            <span class="badge fs-6
+              {% if app.status == 'placed' %}bg-success
+              {% elif app.status == 'shortlisted' %}bg-warning text-dark
+              {% elif app.status == 'interview' %}bg-info text-dark
+              {% elif app.status == 'rejected' %}bg-danger
+              {% else %}bg-secondary{% endif %}">
+              {{ app.status | capitalize }}
+            </span>
+            <div class="small text-muted mt-2">
+              Applied: {{ app.applied_at.strftime('%d %b %Y') }}
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+{% else %}
+<div class="text-center py-5 text-muted">
+  <i class="bi bi-people display-4"></i>
+  <p class="mt-2 fs-5">No applications received for this job yet.</p>
+</div>
+{% endif %}
+
+{% endblock %}

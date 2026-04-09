@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% block title %}My Profile{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h3 class="fw-bold text-primary">
+    <i class="bi bi-person-circle me-2"></i>My Profile
+  </h3>
+  <a href="{{ url_for('student.dashboard') }}" class="btn btn-outline-secondary btn-sm">
+    <i class="bi bi-arrow-left me-1"></i>Back to Dashboard
+  </a>
+</div>
+
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-primary text-white fw-semibold">
+        <i class="bi bi-pencil-square me-2"></i>Edit Profile Information
+      </div>
+      <div class="card-body p-4">
+        <form method="POST" enctype="multipart/form-data">
+          <div class="row g-3">
+
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Full Name</label>
+              <input type="text" name="name" class="form-control"
+                     value="{{ student.name or '' }}" placeholder="Your full name">
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Branch / Department</label>
+              <input type="text" name="branch" class="form-control"
+                     value="{{ student.branch or '' }}" placeholder="e.g. Computer Science">
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Phone Number</label>
+              <input type="text" name="phone" class="form-control"
+                     value="{{ student.phone or '' }}" placeholder="e.g. +91-9876543210">
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">CGPA</label>
+              <input type="number" name="cgpa" class="form-control"
+                     step="0.01" min="0" max="10"
+                     value="{{ student.cgpa or '' }}" placeholder="e.g. 8.5">
+            </div>
+
+            <div class="col-12">
+              <label class="form-label fw-semibold">Skills <small class="text-muted">(comma-separated)</small></label>
+              <input type="text" name="skills" class="form-control"
+                     value="{{ student.skills or '' }}"
+                     placeholder="e.g. Python, Machine Learning, SQL">
+            </div>
+
+            <div class="col-12">
+              <label class="form-label fw-semibold">LinkedIn Profile URL</label>
+              <input type="url" name="linkedin" class="form-control"
+                     value="{{ student.linkedin or '' }}"
+                     placeholder="https://linkedin.com/in/your-profile">
+            </div>
+
+            <div class="col-12">
+              <label class="form-label fw-semibold">About Me</label>
+              <textarea name="about" class="form-control" rows="4"
+                        placeholder="Write a short bio about yourself...">{{ student.about or '' }}</textarea>
+            </div>
+
+            <div class="col-12">
+              <label class="form-label fw-semibold">Resume <small class="text-muted">(PDF / DOC / DOCX)</small></label>
+              {% if student.resume_path %}
+              <div class="mb-2">
+                <i class="bi bi-file-earmark-check text-success me-1"></i>
+                <small class="text-success">Resume uploaded: {{ student.resume_path }}</small>
+              </div>
+              {% endif %}
+              <input type="file" name="resume" class="form-control" accept=".pdf,.doc,.docx">
+            </div>
+
+          </div><!-- /row -->
+
+          <div class="mt-4 d-flex gap-2">
+            <button type="submit" class="btn btn-primary">
+              <i class="bi bi-save me-1"></i>Save Changes
+            </button>
+            <a href="{{ url_for('student.dashboard') }}" class="btn btn-outline-secondary">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Read-only info card -->
+    <div class="card border-0 shadow-sm mt-4">
+      <div class="card-header bg-white fw-semibold border-bottom">
+        <i class="bi bi-info-circle me-1 text-info"></i>Account Info
+      </div>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item d-flex justify-content-between">
+          <span class="text-muted">Email</span>
+          <span>{{ current_user.email }}</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between">
+          <span class="text-muted">Roll Number</span>
+          <span>{{ student.roll_no or '—' }}</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between">
+          <span class="text-muted">Username</span>
+          <span>{{ current_user.username }}</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
