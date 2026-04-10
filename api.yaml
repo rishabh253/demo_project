@@ -1,0 +1,166 @@
+openapi: 3.0.0
+info:
+  title: Flask App API
+  version: 1.0.0
+paths:
+  /:
+    get:
+      summary: Home route
+      responses:
+        '200':
+          description: Welcome to the Flask app
+
+  /login:
+    get:
+      summary: Login route
+      responses:
+        '200':
+          description: Login page
+    post:
+      summary: User login
+      responses:
+        '200':
+          description: User logged in successfully
+
+  /register/student:
+    get:
+      summary: Registration page for students
+      responses:
+        '200':
+          description: Student registration page
+    post:
+      summary: Register a new student
+      responses:
+        '201':
+          description: Student registered successfully
+
+  /admin/dashboard:
+    get:
+      summary: Admin dashboard
+      responses:
+        '200':
+          description: Admin dashboard
+
+  /admin/companies:
+    get:
+      summary: List of companies
+      responses:
+        '200':
+          description: List of companies
+
+  /admin/company/{company_id}:
+    get:
+      summary: Details of a specific company
+      parameters:
+        - name: company_id
+          in: path
+          required: true
+          description: The ID of the company
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Company details
+
+    post:
+      summary: Create or update a company
+      parameters:
+        - name: company_id
+          in: path
+          required: true
+          description: The ID of the company
+          schema:
+            type: integer
+      responses:
+        '201':
+          description: Company created or updated successfully
+
+  /admin/company/{company_id}/approve:
+    post:
+      summary: Approve a company
+      parameters:
+        - name: company_id
+          in: path
+          required: true
+          description: The ID of the company
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Company approved
+
+  /admin/company/{company_id}/reject:
+    post:
+      summary: Reject a company
+      parameters:
+        - name: company_id
+          in: path
+          required: true
+          description: The ID of the company
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Company rejected
+
+  /admin/company/{company_id}/blacklist:
+    post:
+      summary: Blacklist a company
+      parameters:
+        - name: company_id
+          in: path
+          required: true
+          description: The ID of the company
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Company blacklisted
+
+  /student/dashboard:
+    get:
+      summary: Student dashboard
+      responses:
+        '200':
+          description: Student dashboard
+
+  /student/profile:
+    get:
+      summary: Student profile
+      responses:
+        '200':
+          description: Student profile details
+    post:
+      summary: Update student profile
+      responses:
+        '200':
+          description: Student profile updated successfully
+
+  /student/jobs:
+    get:
+      summary: List of jobs available for students
+      responses:
+        '200':
+          description: List of student jobs
+
+  /company/dashboard:
+    get:
+      summary: Company dashboard
+      responses:
+        '200':
+          description: Company dashboard
+
+  /company/post-job:
+    post:
+      summary: Post a job by company
+      responses:
+        '201':
+          description: Job posted successfully
+
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
